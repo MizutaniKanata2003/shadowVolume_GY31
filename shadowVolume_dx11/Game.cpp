@@ -31,11 +31,11 @@ Game::Game()
 
 	// 初期位置設定
 	land->position = {0.0f,-5.0f,15.0f};
-	land->scaling = {0.01,0.01,0.01};
+	land->scaling = {0.01f,0.01f,0.01f};
 
 	for(int i = 0; i < 16; i++){
 		//	donuts[i]->position.x = 0.0f;
-		donuts[i]->scaling = {0.001,0.001,0.001};
+		donuts[i]->scaling = {0.001f,0.001f,0.001f};
 		donuts[i]->position.x = ((rand() % 20) - 10) * 0.1f;		// 座標
 		donuts[i]->position.y = ((rand() % 10) - 25) * 0.1f;
 		donuts[i]->position.z = ((rand() % 20) - 10) * 0.1f;
@@ -45,9 +45,9 @@ Game::Game()
 		donuts_rot_speed[i].x = ((rand() % 100) - 50) / 100.0f;		// 回転速度
 		donuts_rot_speed[i].y = ((rand() % 100) - 50) / 100.0f;
 		donuts_rot_speed[i].z = ((rand() % 100) - 50) / 100.0f;
-		donuts_shadow[i]->scaling = {0.001,0.001,0.001};
+		donuts_shadow[i]->scaling = {0.001f,0.001f,0.001f};
 	}
-	pointLight->scaling = {0.01,0.01,0.01};
+	pointLight->scaling = {0.01f,0.01f,0.01f};
 	base_cycle.x = rand() / 10.0f;			// 基準座標の回転値
 	base_cycle.y = rand() / 10.0f;			// 基準座標の回転値
 	base_cycle.z = rand() / 10.0f;			// 基準座標の回転値

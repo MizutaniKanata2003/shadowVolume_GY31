@@ -78,17 +78,17 @@ HRESULT D3D::Create(HWND hwnd)
 
 
 	UINT flags = 0;
-//#ifdef _DEBUG
-//    flags |= D3D11_CREATE_DEVICE_DEBUG;
-//#endif
-	D3D_FEATURE_LEVEL pLevels[] = { D3D_FEATURE_LEVEL_11_0 };
+	//#ifdef _DEBUG
+	//    flags |= D3D11_CREATE_DEVICE_DEBUG;
+	//#endif
+	D3D_FEATURE_LEVEL pLevels[] = {D3D_FEATURE_LEVEL_11_0};
 	D3D_FEATURE_LEVEL level;
 
 	CRect                rect;
 	DXGI_SWAP_CHAIN_DESC scDesc;
 
-	::GetClientRect(hwnd, &rect);
-	::ZeroMemory(&scDesc, sizeof(scDesc));
+	::GetClientRect(hwnd,&rect);
+	::ZeroMemory(&scDesc,sizeof(scDesc));
 	scDesc.BufferCount = 1;
 	scDesc.BufferDesc.Width = rect.Width();
 	scDesc.BufferDesc.Height = rect.Height();
@@ -112,26 +112,26 @@ HRESULT D3D::Create(HWND hwnd)
 		&m_pDevice,
 		&level,
 		&m_pImmediateContext);
-	if (FAILED(hr)) // 上の関数呼び出しが失敗してないかifでチェック
+	if(FAILED(hr)) // 上の関数呼び出しが失敗してないかifでチェック
 		return hr;
 
 
 	ID3D11Texture2D* pBackBuffer;
 
-	hr = m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-	if (FAILED(hr))
+	hr = m_pSwapChain->GetBuffer(0,__uuidof(ID3D11Texture2D),(LPVOID*)&pBackBuffer);
+	if(FAILED(hr))
 		return hr;
 
 	// レンダーターゲットを作成する関数を呼び出す
-	hr = m_pDevice->CreateRenderTargetView(pBackBuffer, NULL, &m_pRenderTargetView);
+	hr = m_pDevice->CreateRenderTargetView(pBackBuffer,NULL,&m_pRenderTargetView);
 	pBackBuffer->Release();
-	if (FAILED(hr))
+	if(FAILED(hr))
 		return hr;
 
 	// 深度ステンシルバッファを作成
 	// ※深度バッファ（Zバッファ）→奥行を判定して前後関係を正しく描画できる
 	D3D11_TEXTURE2D_DESC txDesc;
-	ZeroMemory(&txDesc, sizeof(txDesc));
+	ZeroMemory(&txDesc,sizeof(txDesc));
 	txDesc.Width = rect.Width();
 	txDesc.Height = rect.Height();
 	txDesc.MipLevels = 1;
@@ -143,17 +143,17 @@ HRESULT D3D::Create(HWND hwnd)
 	txDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	txDesc.CPUAccessFlags = 0;
 	txDesc.MiscFlags = 0;
-	hr = m_pDevice->CreateTexture2D(&txDesc, NULL, &m_pDepthStencilTexture);
-	if (FAILED(hr))
+	hr = m_pDevice->CreateTexture2D(&txDesc,NULL,&m_pDepthStencilTexture);
+	if(FAILED(hr))
 		return hr;
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsDesc;
-	ZeroMemory(&dsDesc, sizeof(dsDesc));
+	ZeroMemory(&dsDesc,sizeof(dsDesc));
 	dsDesc.Format = txDesc.Format;
 	dsDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsDesc.Texture2D.MipSlice = 0;
-	hr = m_pDevice->CreateDepthStencilView(m_pDepthStencilTexture, &dsDesc, &m_pDepthStencilView);
-	if (FAILED(hr))
+	hr = m_pDevice->CreateDepthStencilView(m_pDepthStencilTexture,&dsDesc,&m_pDepthStencilView);
+	if(FAILED(hr))
 		return hr;
 
 	// インプットレイアウト作成
@@ -161,32 +161,32 @@ HRESULT D3D::Create(HWND hwnd)
 	D3D11_INPUT_ELEMENT_DESC g_VertexDesc[]
 	{
 		// 位置座標があるということを伝える
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
-			D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,
+		D3D11_INPUT_PER_VERTEX_DATA,0},
 
 		// UV座標があるということを伝える
-		{ "TEX",    0, DXGI_FORMAT_R32G32_FLOAT, 0,
-			D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{"TEX",0,DXGI_FORMAT_R32G32_FLOAT,0,
+		D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
 
 		// 法線ベクトルがあるということを伝える
-		{ "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
-			D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,
+		D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
 	};
 
-	hr = m_pDevice->CreateInputLayout(g_VertexDesc, ARRAYSIZE(g_VertexDesc),
-		g_vs_main, sizeof(g_vs_main),
+	hr = m_pDevice->CreateInputLayout(g_VertexDesc,ARRAYSIZE(g_VertexDesc),
+		g_vs_main,sizeof(g_vs_main),
 		&m_pInputLayout);
-	if (FAILED(hr))
+	if(FAILED(hr))
 		return hr;
 
 	// シェーダーのオブジェクトを作成
 	// コンパイル済みシェーダーをVRAMに配置してGPUが実行できるようにする
-	hr = m_pDevice->CreateVertexShader(&g_vs_main, sizeof(g_vs_main), NULL, &m_pVertexShader);
-	if (FAILED(hr))
+	hr = m_pDevice->CreateVertexShader(&g_vs_main,sizeof(g_vs_main),NULL,&m_pVertexShader);
+	if(FAILED(hr))
 		return hr;
 
-	hr = m_pDevice->CreatePixelShader(&g_ps_main, sizeof(g_ps_main), NULL, &m_pPixelShader);
-	if (FAILED(hr))
+	hr = m_pDevice->CreatePixelShader(&g_ps_main,sizeof(g_ps_main),NULL,&m_pPixelShader);
+	if(FAILED(hr))
 		return hr;
 
 	// ビューポートを作成
@@ -197,19 +197,19 @@ HRESULT D3D::Create(HWND hwnd)
 	m_Viewport.Height = (FLOAT)rect.Height();
 	m_Viewport.MinDepth = 0.0f;
 	m_Viewport.MaxDepth = 1.0f;
-	
+
 	// サンプラー作成
 	// →テクスチャ拡大縮小時のアルゴリズム
 	D3D11_SAMPLER_DESC smpDesc;
 
-	::ZeroMemory(&smpDesc, sizeof(D3D11_SAMPLER_DESC));
+	::ZeroMemory(&smpDesc,sizeof(D3D11_SAMPLER_DESC));
 	// 適用されるフィルター（アルゴリズム）の種類
 	smpDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	smpDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	smpDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	smpDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	hr = m_pDevice->CreateSamplerState(&smpDesc, &m_pSampler);
-	if (FAILED(hr)) {
+	hr = m_pDevice->CreateSamplerState(&smpDesc,&m_pSampler);
+	if(FAILED(hr)){
 		return hr;
 	}
 
@@ -239,19 +239,17 @@ HRESULT D3D::Create(HWND hwnd)
 	svDesc.MiscFlags = 0;
 	svDesc.StructureByteStride = 0;
 
-	hr = m_pDevice->CreateBuffer(&cbDesc, NULL, &m_pConstantBuffer);
-   
+	hr = m_pDevice->CreateBuffer(&cbDesc,NULL,&m_pConstantBuffer);
+
 	hr = m_pDevice->CreateBuffer(
 		&svDesc,
 		NULL,
 		&g_shadowVolumeVB);
 
-	if (FAILED(hr))
-	{
+	if(FAILED(hr)){
 		OutputDebugStringA("ShadowVB Failed\n");
 	}
-	else
-	{
+	else{
 		OutputDebugStringA("ShadowVB Success\n");
 	}
 
@@ -259,7 +257,7 @@ HRESULT D3D::Create(HWND hwnd)
 	// →透過処理や加算合成を可能にする色の合成方法
 	// 　加算合成　→　エフェクトなどに使用する色が明るくなる合成方法
 	D3D11_BLEND_DESC BlendState;
-	ZeroMemory(&BlendState, sizeof(D3D11_BLEND_DESC));
+	ZeroMemory(&BlendState,sizeof(D3D11_BLEND_DESC));
 	BlendState.AlphaToCoverageEnable = FALSE;
 	BlendState.IndependentBlendEnable = FALSE;
 	BlendState.RenderTarget[0].BlendEnable = TRUE;
@@ -271,14 +269,14 @@ HRESULT D3D::Create(HWND hwnd)
 	BlendState.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	BlendState.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	BlendState.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	hr = m_pDevice->CreateBlendState(&BlendState, &m_pBlendStateAlpha);
+	hr = m_pDevice->CreateBlendState(&BlendState,&m_pBlendStateAlpha);
 
-	m_pImmediateContext->OMSetBlendState(m_pBlendStateAlpha, NULL, 0xffffffff);
+	m_pImmediateContext->OMSetBlendState(m_pBlendStateAlpha,NULL,0xffffffff);
 
 	// 加算合成の設定を作る
 	// 背景色に掛け合わせる係数
 	BlendState.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-	m_pDevice->CreateBlendState(&BlendState, &m_pBlendStateAdditive);
+	m_pDevice->CreateBlendState(&BlendState,&m_pBlendStateAdditive);
 
 	return hr;
 }
@@ -287,7 +285,7 @@ HRESULT D3D::Create(HWND hwnd)
 // ※DirectXの各機能は作成した後、アプリ終了時に必ず解放しなければならない
 D3D::~D3D()
 {
-	if (m_pImmediateContext) {
+	if(m_pImmediateContext){
 		m_pImmediateContext->ClearState();
 	}
 
@@ -313,7 +311,7 @@ D3D::~D3D()
 
 
 // 引数③：UV座標の右下の値
-D3D::Model D3D::CreateSquare(FLOAT_XY center, FLOAT_XY size, FLOAT_XY uv)
+D3D::Model D3D::CreateSquare(FLOAT_XY center,FLOAT_XY size,FLOAT_XY uv)
 {
 	float l = center.x - size.x / 2.0f;
 	float r = l + size.x;
@@ -323,13 +321,13 @@ D3D::Model D3D::CreateSquare(FLOAT_XY center, FLOAT_XY size, FLOAT_XY uv)
 	Vertex vertexList[] =
 	{
 		// 頂点が時計回りに三角形を形成する側がポリゴンの表になる
-		{ {l, t, 0.5f}, {0.00f, 0.00f} },  // ０番目の頂点座標　{ x, y, z, u, v }
-		{ {r, b, 0.5f}, {uv.x, uv.y} },  // １番目の頂点座標
-		{ {l, b, 0.5f}, {0.00f, uv.y} },  // ２番目の頂点座標
+		{{l,t,0.5f},{0.00f,0.00f}},  // ０番目の頂点座標　{ x, y, z, u, v }
+		{{r,b,0.5f},{uv.x,uv.y}},  // １番目の頂点座標
+		{{l,b,0.5f},{0.00f,uv.y}},  // ２番目の頂点座標
 
-		{ {l, t, 0.5f}, {0.00f, 0.00f} },  // ３番目の頂点
-		{ {r, t, 0.5f}, {uv.x, 0.00f} },  // ４番目の頂点
-		{ {r, b, 0.5f}, {uv.x, uv.y} },  // ５番目の頂点
+		{{l,t,0.5f},{0.00f,0.00f}},  // ３番目の頂点
+		{{r,t,0.5f},{uv.x,0.00f}},  // ４番目の頂点
+		{{r,b,0.5f},{uv.x,uv.y}},  // ５番目の頂点
 	};
 
 	// 頂点バッファを作成する
@@ -349,7 +347,7 @@ D3D::Model D3D::CreateSquare(FLOAT_XY center, FLOAT_XY size, FLOAT_XY uv)
 
 	Model model = {};
 	// 頂点バッファ作成して、それを変数（第３引数）に保存
-	Get()->GetDevice()->CreateBuffer(&bufferDesc, &subResourceData, &model.vertexBuffer);
+	Get()->GetDevice()->CreateBuffer(&bufferDesc,&subResourceData,&model.vertexBuffer);
 
 	return model;
 }
@@ -361,23 +359,22 @@ D3D::Model D3D::LoadObjModel(const wchar_t* fileName)
 	WaveFrontReader<uint16_t> reader;
 
 	HRESULT hr;
-	hr = reader.Load(fileName, true);
+	hr = reader.Load(fileName,true);
 
-	if (FAILED(hr)) // 読み込み失敗したら
+	if(FAILED(hr)) // 読み込み失敗したら
 	{
-		MessageBoxA(NULL, "モデル読み込み失敗", "エラー", MB_OK | MB_ICONERROR);
+		MessageBoxA(NULL,"モデル読み込み失敗","エラー",MB_OK | MB_ICONERROR);
 		return Model(); // 空のモデルを返す
 	}
 
 	// readerの中に読み込まれたデータを流し込む配列
 	// 頂点の個数を取得する
-	const int numVertex = reader.vertices.size();
+	const int numVertex = (int)reader.vertices.size();
 	Vertex* vertexList;
 	vertexList = new Vertex[numVertex]; // 配列の動的生成
 
 	// 頂点データを流し込む
-	for (int i = 0; i < numVertex; i++)
-	{
+	for(int i = 0; i < numVertex; i++){
 		vertexList[i].position = reader.vertices[i].position;
 		vertexList[i].uv = reader.vertices[i].textureCoordinate;
 		// 法線ベクトルを取得
@@ -387,15 +384,15 @@ D3D::Model D3D::LoadObjModel(const wchar_t* fileName)
 		vertexList[i].uv.y = 1.0f - vertexList[i].uv.y;
 
 		// 法線ベクトルが逆なので反転する
-		vertexList[i].normal.x *= -1;
-		vertexList[i].normal.y *= -1;
-		vertexList[i].normal.z *= -1;
+		vertexList[i].normal.x *= -1.0f;
+		vertexList[i].normal.y *= -1.0f;
+		vertexList[i].normal.z *= -1.0f;
 	}
 
 	// 頂点バッファを作成する
 	// ※頂点バッファ→VRAMに頂点データを置くための機能
 	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.ByteWidth = sizeof(Vertex)*numVertex;// 確保するバッファサイズを指定
+	bufferDesc.ByteWidth = sizeof(Vertex) * numVertex;// 確保するバッファサイズを指定
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;// 頂点バッファ作成を指定
 	bufferDesc.CPUAccessFlags = 0;
@@ -411,8 +408,7 @@ D3D::Model D3D::LoadObjModel(const wchar_t* fileName)
 
 	model.vertices.resize(numVertex);//NEW
 
-	for (int i = 0; i < numVertex; i++)
-	{
+	for(int i = 0; i < numVertex; i++){
 		model.vertices[i].position = vertexList[i].position;
 
 		model.vertices[i].uv = vertexList[i].uv;
@@ -423,12 +419,12 @@ D3D::Model D3D::LoadObjModel(const wchar_t* fileName)
 
 
 	// 頂点バッファ作成して、それを変数（第３引数）に保存
-	Get()->GetDevice()->CreateBuffer(&bufferDesc, &subResourceData, &model.vertexBuffer);
+	Get()->GetDevice()->CreateBuffer(&bufferDesc,&subResourceData,&model.vertexBuffer);
 
 	// 頂点の何番目を使って面を構成するかというデータを
 	// 「インデックスバッファ」という。
 	D3D11_BUFFER_DESC ibDesc;
-	ibDesc.ByteWidth = sizeof(WORD) * reader.indices.size(); //2バイト×個数
+	ibDesc.ByteWidth = sizeof(WORD) * (UINT)reader.indices.size(); //2バイト×個数
 	ibDesc.Usage = D3D11_USAGE_DEFAULT;
 	ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	ibDesc.CPUAccessFlags = 0;
@@ -441,23 +437,23 @@ D3D::Model D3D::LoadObjModel(const wchar_t* fileName)
 	irData.SysMemSlicePitch = 0;
 
 	hr = D3D::Get()->GetDevice()->CreateBuffer(
-		&ibDesc, &irData, &model.indexBuffer);
+		&ibDesc,&irData,&model.indexBuffer);
 
 	model.indices.assign(reader.indices.begin(),reader.indices.end());//NEW
 
 
 	// インデックス数を保存
-	model.numIndex = reader.indices.size();
+	model.numIndex = (int)reader.indices.size();
 
-	
+
 	// 動的生成した配列を解放
 	delete[] vertexList;
 
 	// テクスチャ読み込み
 	// ファイル名を取得してフォルダ名と結合する
 	wchar_t textureName[256];
-	wcscpy_s(textureName, L"asset/"); // 文字列コピー関数
-	wcscat_s(textureName, reader.materials[1].strTexture); // 文字列結合関数
+	wcscpy_s(textureName,L"asset/"); // 文字列コピー関数
+	wcscat_s(textureName,reader.materials[1].strTexture); // 文字列結合関数
 	model.texture = D3D::LoadTexture(textureName);
 
 	return model;
@@ -471,12 +467,11 @@ D3DTEXTURE D3D::LoadTexture(const wchar_t* filename)
 
 	HRESULT hr;
 	// 第４引数：読み込んだテクスチャを保持する変数
-	hr = DirectX::CreateWICTextureFromFile(Get()->GetDevice(), filename,
-		NULL, &texture);
+	hr = DirectX::CreateWICTextureFromFile(Get()->GetDevice(),filename,
+		NULL,&texture);
 
-	if (FAILED(hr))
-	{ // 読み込みに失敗した場合
-		MessageBoxA(NULL, "テクスチャ読み込みに失敗", "エラー",
+	if(FAILED(hr)){ // 読み込みに失敗した場合
+		MessageBoxA(NULL,"テクスチャ読み込みに失敗","エラー",
 			MB_OK | MB_ICONERROR);
 	}
 
@@ -497,38 +492,38 @@ UINT D3D::GetVertexStride()
 void D3D::ClearScreen()
 {
 	// 画面塗りつぶし色
-	float clearColor[4] = { 0.0f, 0.0f, 1.0f, 1.0f }; //red,green,blue,alpha
+	float clearColor[4] = {0.0f,0.0f,1.0f,1.0f}; //red,green,blue,alpha
 
 	// 描画先のキャンバスと使用する深度バッファを指定する
-	m_pImmediateContext->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+	m_pImmediateContext->OMSetRenderTargets(1,&m_pRenderTargetView,m_pDepthStencilView);
 	// 描画先キャンバスを塗りつぶす
-	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView, clearColor);
+	m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView,clearColor);
 	// 深度バッファをリセットする
-	m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView,D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,1.0f,0);
 
 	UINT strides = sizeof(Vertex);
 	UINT offsets = 0;
 	m_pImmediateContext->IASetInputLayout(m_pInputLayout);
 
 	m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_pImmediateContext->VSSetShader(m_pVertexShader, NULL, 0);
-	m_pImmediateContext->RSSetViewports(1, &m_Viewport);
-	m_pImmediateContext->PSSetShader(m_pPixelShader, NULL, 0);
+	m_pImmediateContext->VSSetShader(m_pVertexShader,NULL,0);
+	m_pImmediateContext->RSSetViewports(1,&m_Viewport);
+	m_pImmediateContext->PSSetShader(m_pPixelShader,NULL,0);
 
 
 	// ピクセルシェーダーにサンプラーを渡す
-	m_pImmediateContext->PSSetSamplers(0, 1, &m_pSampler);
+	m_pImmediateContext->PSSetSamplers(0,1,&m_pSampler);
 
 	// 定数バッファを頂点シェーダーにセットする
 	m_pImmediateContext->VSSetConstantBuffers(
-		0, 1, &m_pConstantBuffer);
+		0,1,&m_pConstantBuffer);
 	// 定数バッファをピクセルシェーダーにセットする
 	m_pImmediateContext->PSSetConstantBuffers(
-		0, 1, &m_pConstantBuffer);
+		0,1,&m_pConstantBuffer);
 }
 
 void D3D::UpdateScreen()
 {
 	// ダブルバッファの切り替えを行い画面を更新する
-	m_pSwapChain->Present(0, 0);
+	m_pSwapChain->Present(0,0);
 }
